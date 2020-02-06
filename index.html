@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<script src="js/jquery-3.4.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<title>Document</title>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<h1>Таблица должников</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<div id="app">
+					<table class="table table-striped table-hover table-sm table-bordered">
+						<thead>
+							<tr>
+
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="debitor in debitors">
+								<td>{{ debitor.name }}</td>
+								<td>{{ debitor.amount }}</td>
+							</tr>
+						</tbody>
+					</table>
+					<hr>
+					<fieldset>
+						<legend>Добавить долг</legend>
+						<div class="row">
+
+							<div class="col-5">
+
+								<select id="d_name" class="form-control">
+									<option v-for="debitor in debitors">
+										{{ debitor.name }}
+									</option>
+								</select>
+							</div>
+							<div class="col-4">
+								<input type="number" id="d_amount" value="0" class="form-control">
+							</div>
+							<div class="col-3">
+								<input type="button" id="push" value="Добавить" class="btn btn-primary">
+							</div>
+
+						</div>
+					</fieldset>
+					<hr>
+					<fieldset>
+						<legend>Добавить человека</legend>
+						<div class="row">
+							<div class="col-6">
+								<input type="text" name="" id="n_name" class="form-control">
+							</div>
+							<div class="col-6">
+								<input type="button" id="add_debitor" value="Добавить человека" class="btn btn-success">
+							</div>
+						</div>
+					</fieldset>
+					<fieldset>
+						<legend>Удалить человека</legend>
+						<div class="row">
+
+							<div class="col-9">
+
+								<select id="d_name" class="form-control">
+									<option v-for="debitor in debitors">
+										{{ debitor.name }}
+									</option>
+								</select>
+							</div>
+
+							<div class="col-3">
+								<input type="button" id="remove" value="Удалить" class="btn btn-danger">
+							</div>
+
+						</div>
+					</fieldset>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="cordova.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</body>
+<script>
+	$(document).ready(function () {
+
+		// debitors = [
+		// 	{ name: 'Яхъя', amount: 200000 },
+		// 	{ name: 'Асхат', amount: 350000 },
+		// 	{ name: 'Отабек', amount: 20000 },
+		// ];
+		if (window.localStorage.getItem('debitors') === null) {
+			debitors = [];
+			window.localStorage.setItem('debitors', JSON.stringify(debitors));
+		} else {
+			debitors = JSON.parse(window.localStorage.getItem('debitors'));
+		}
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				debitors: debitors
+			}
+		});
+
+		$("#push").click(function () {
+			$name = $("#d_name").val();
+			$amount = $("#d_amount").val();
+			//console.log(debitors);
+			found = false;
+
+			debitors.forEach(function (item, index) {
+				if (item.name == $name) {
+					debitors[index].amount += parseInt($amount);
+					found = true;
+				}
+			});
+			if (!found) {
+				app.debitors.push({ name: $name, amount: $amount });
+			}
+			window.localStorage.setItem('debitors', JSON.stringify(debitors));
+		});
+
+		$("#remove").click(function () {
+			$name = $("#d_name").val();
+			$amount = $("#d_amount").val();
+			console.log(debitors);
+			
+			for (var i = 0; i < debitors.length; i++) {
+				if (debitors[i].name == $name) {
+					debitors.splice(i, 1);
+					i--;
+				}
+			}
+			console.log(debitors);
+
+			window.localStorage.setItem('debitors', JSON.stringify(debitors));
+		});
+
+		$("#add_debitor").click(function () {
+			$name = $("#n_name").val();
+			$amount = 0;
+			app.debitors.push({ name: $name, amount: $amount });
+			window.localStorage.setItem('debitors', JSON.stringify(debitors));
+		});
+	});
+
+	function arrayRemove(arr, value) {
+
+		return arr.filter(function (ele) {
+			return ele.name != value;
+		});
+
+	}
+</script>
+
+</html>
